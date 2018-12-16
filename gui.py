@@ -169,7 +169,7 @@ class GameWindow:
                 strEquip[i]=equipList[label.equip[i]].name
                 if label.equipNum[i]>1:
                     strEquip[i] += str(label.equipNum[i])
-        self.labelSelect.config(text=labelText % (strUnit, strEquip[0], strEquip[1], strEquip[2]))
+        label.config(text=labelText % (strUnit, strEquip[0], strEquip[1], strEquip[2]))
 
     def run(self):
         # 进入消息循环

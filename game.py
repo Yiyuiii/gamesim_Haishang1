@@ -533,7 +533,7 @@ class BattleField:
 
 class Game:
     battleField = BattleField()
-    runNum=100
+    runNum=200
 
     # shld run after loadEquipList()
     def loadUnitList(self):
