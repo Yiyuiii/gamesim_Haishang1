@@ -302,7 +302,7 @@ class BattleField:
                                      iTarget=tar[1], sideTarget=tar[0], nTarget=nUnit)
         elif equip.operMethod == OperMethodDict['死神BUFF']:
             self.unitSetHealth(10, '+', unit, i, side, n)
-            unit.setPower([3 in range(2, PowerNum)], '+')
+            unit.setPower([0, 0, 3, 3, 3, 3], '+')
         elif equip.operMethod == OperMethodDict['仙人掌攻击']:
             dmg=0
             for iUnit in self.pickUnit(side, RangeDict['友军'], i):
