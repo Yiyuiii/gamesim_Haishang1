@@ -6,7 +6,9 @@ from __future__ import print_function
 from game import *
 from tkinter import *
 from tkinter.simpledialog import askinteger
+import os
 
+txtFileName = 'webpage\\jjc.txt'
 labelText = "%s\n装备1：%s\n装备2：%s\n装备3：%s"
 
 class windowUnit(Label):
@@ -36,6 +38,7 @@ class GameWindow:
     unitListBox = None      # Listbox(root, selectmode)
     equipListBox = None     # Listbox(root, selectmode)
     btnPlay = None
+    btnLoad = None
     btnRe = None
     labelWin1 = None
     labelWin2 = None
@@ -107,12 +110,14 @@ class GameWindow:
         buttonFrame = Frame(self.root)
         self.btnPlay = Button(buttonFrame, text='运行', width=10, command=self.Onclick_btnPlay)
         self.btnRe = Button(buttonFrame, text='重置', width=10, command=self.Onclick_btnRe)
+        self.btnLoad = Button(buttonFrame, text='载入', width=10, command=self.Onclick_btnLoad)
         self.labelWin1 = Label(buttonFrame, width=10)
         self.labelWin2 = Label(buttonFrame, width=10)
         self.labelWin1.grid(row=0, column=0, padx=15)
         self.btnPlay.grid(row=0, column=1, padx=15)
         self.labelWin2.grid(row=0, column=2, padx=15)
         self.btnRe.grid(row=0, column=3, padx=15)
+        self.btnLoad.grid(row=0, column=4, padx=15)
         buttonFrame.grid(row=1, column=0, columnspan=3, sticky=E + W + N + S)
 
     def Onclick_btnPlay(self):
@@ -129,6 +134,22 @@ class GameWindow:
         winRate = self.game.run()
         self.labelWin1.config(text='1队:%.2f%%' % (winRate[0] * 100))
         self.labelWin2.config(text='2队:%.2f%%' % (winRate[1] * 100))
+
+    def Onclick_btnLoad(self):
+        if not os.path.exists(txtFileName):
+            print("%s file not exists." % txtFileName)
+            return
+        for side in range(2):
+            for i in range(9):
+                self.labelList[side][i].refresh()
+        with open(txtFileName, encoding='UTF-8') as file_object:
+            content = file_object.read()
+            if len(content)>0:
+                self.readStr(content)
+        for side in range(2):
+            for i in range(9):
+                self.labelRefresh(self.labelList[side][i])
+
 
     def Onclick_btnRe(self):
         self.game.refresh()
@@ -158,6 +179,31 @@ class GameWindow:
         self.labelSelect.appendEquip(index, num)
         self.labelRefresh(self.labelSelect)
 
+    def readStr(self, strIn):
+        strTeam=re.split('-', strIn)
+        for side in range(2):
+            strUnits=re.split(';', strTeam[side])
+            for strUnit in strUnits:
+                if strUnit=="":
+                    continue
+                attrs = re.split(',', strUnit)
+                i = (int(attrs[2])-3)*3+int(attrs[1])
+                self.labelList[side][i].unit = unitRevDict[attrs[0]]
+                if len(attrs)<4 or attrs[3]=="":
+                    continue
+                equips = re.split('\|', attrs[3])
+                for e in equips:
+                    if e == "":
+                        continue
+                    equipS=re.split(':', e)
+                    if equipS[0]=='宝物':
+                        equipStr=equipS[1]
+                        equipN=1
+                    else:
+                        equipN=int(equipS[1])
+                        equipStr=equipS[0][0:2]
+                    self.labelList[side][i].appendEquip(equipRevDict[equipStr], equipN)
+
     def labelRefresh(self, label):
         if label.unit>=0:
             strUnit=unitList[label.unit].name
@@ -168,7 +214,7 @@ class GameWindow:
             if label.equip[i]>0:
                 strEquip[i]=equipList[label.equip[i]].name
                 if label.equipNum[i]>1:
-                    strEquip[i] += str(label.equipNum[i])
+                    strEquip[i] += 'x' + str(label.equipNum[i])
         label.config(text=labelText % (strUnit, strEquip[0], strEquip[1], strEquip[2]))
 
     def run(self):

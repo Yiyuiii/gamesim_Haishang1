@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+
+  "name": "Seagame JS implants",
+  "description": "Seagame JS implants",
+  "version": "1.0",
+
+  "icons": {
+	"128" : "icon.png"
+  },
+  "permissions": [
+	"tabs", "http://*/*","https://*/*","webRequest","webRequestBlocking"
+  ],
+  "background":{
+	"page":"background.html"
+  },
+  "web_accessible_resources":["js/*"],
+  "content_scripts": [{
+	  "js":["js/jquery-3.1.1.min.js"],
+	  "matches":["https://www.seagame.com/mxj/index.php"]
+  }]
+}

@@ -6,7 +6,9 @@ from unit import GameUnitStruct,UnitStruct
 from equip import EquipStruct
 
 unitList=[]
+unitRevDict={}
 equipList=[]
+equipRevDict={}
 
 class BattleField:
     units = []
@@ -498,10 +500,10 @@ class BattleField:
         dmg=unit.takePoisonDmg()
         if dmg>0:
             print('%s[%d,%d]受到%d点毒伤.' % (unit.getName(), i, side, dmg))
-        if unit.isAlive():
-            if dmg>0:
-                self.unitEquipTrigger(OppotunityDict['减少生命'], unit, i, side, n, -1, -1, -1)
-        else:
+        if not unit.isAlive():
+            #if dmg>0:
+            #    self.unitEquipTrigger(OppotunityDict['减少生命'], unit, i, side, n, -1, -1, -1)
+            #else:
             self.unitDeath(unit, i, side, n)
 
     # return winner,-1=draw
@@ -550,6 +552,8 @@ class Game:
                     if int(equipId)>0:
                         unit.Equip.append(equipList[int(equipId)])
             unitList.append(unit)
+        for i in range(0, len(unitList)):
+            unitRevDict[unitList[i].name] = i
 
     def loadEquipList(self):
         equipData = pandas.read_excel(EquipFileName).fillna(0)
@@ -565,11 +569,39 @@ class Game:
                               data['触发限定'],data['触发计数'],data['初始计数'],data['概率'],data['操作名称'],
                               data['操作属性'],data['操作对象'],data['操作限定'],data['基础数值'],data['属性加成'])
             equipList.append(equip)
+        for i in range(0, len(equipList)):
+            equipRevDict[equipList[i].name] = i
 
     def __init__(self):
         self.loadEquipList()
         self.loadUnitList()
         self.battleField.refresh()
+
+    def readStr(self, strIn):
+        strTeam=re.split('-', strIn)
+        for side in range(2):
+            strUnits=re.split(';', strTeam[side])
+            for strUnit in strUnits:
+                if strUnit=="":
+                    continue
+                attrs = re.split(',', strUnit)
+                i = (int(attrs[2])-3)*3+int(attrs[1])
+                self.battleField.addUnit(unitList[unitRevDict[attrs[0]]], i, side)
+                if len(attrs) < 4 or attrs[3]=="":
+                    continue
+                equips = re.split('\|', attrs[3])
+                for e in equips:
+                    if e == "":
+                        continue
+                    equipS=re.split(':', e)
+                    if equipS[0]=='宝物':
+                        equipStr=equipS[1]
+                        equipN=1
+                    else:
+                        equipN=int(equipS[1])
+                        equipStr=equipS[0][0:2]
+                    for ii in range(equipN):
+                        self.battleField.getUnit(i, side).addEquip(equipList[equipRevDict[equipStr]])
 
     def setRunNum(self, runNum):
         self.runNum = runNum

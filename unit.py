@@ -29,6 +29,8 @@ class UnitStruct:
             self.race = RaceDict[race]
         self.health = int(health)
         self.dmg = int(dmg)
+        if self.dmg<=0:
+            self.atkNum = 0
         self.power = power
         self.dodge = int(dodge)
         self.Equip = []
@@ -62,7 +64,7 @@ class GameUnitStruct:
     def addEquip(self, equip):
         if (equip.dmgType>0):
             self.Unit.dmgType = equip.dmgType
-        self.Unit.atkNum *= equip.atkNum
+        self.setAtkNum(self.Unit.atkNum * equip.atkNum)
         if (equip.atkRange > self.Unit.atkRange):
             self.Unit.atkRange = equip.atkRange
         if (equip.race > 0):
@@ -136,6 +138,8 @@ class GameUnitStruct:
 
     def setAtkNum(self, atkNum):
         self.Unit.atkNum=atkNum
+        if self.Unit.atkNum>2:
+            self.Unit.atkNum=2
         return self.getAtkNum()
 
     def getAtkNum(self):
