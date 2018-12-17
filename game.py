@@ -288,6 +288,8 @@ class BattleField:
             unit.setPoison(0)
         elif equip.operMethod == OperMethodDict['连锁闪电']:
             # atkx3-6
+            if self.unitCnt[sideTarget]<=1:
+                return []
             atkNum=random.randint(3,7)
             for j in range(atkNum):
                 iUnit = self.pickUnit(sideTarget, RangeDict['远程'])[0]
@@ -500,10 +502,10 @@ class BattleField:
         dmg=unit.takePoisonDmg()
         if dmg>0:
             print('%s[%d,%d]受到%d点毒伤.' % (unit.getName(), i, side, dmg))
-        if not unit.isAlive():
-            #if dmg>0:
-            #    self.unitEquipTrigger(OppotunityDict['减少生命'], unit, i, side, n, -1, -1, -1)
-            #else:
+        if unit.isAlive():
+            if dmg>0:
+                self.unitEquipTrigger(OppotunityDict['减少生命'], unit, i, side, n, -1, -1, -1)
+        else:
             self.unitDeath(unit, i, side, n)
 
     # return winner,-1=draw
