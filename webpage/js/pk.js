@@ -220,19 +220,20 @@ var pk={
     },
     buy0: function (team,num)
     {
+		var limit=600;
         if (myinfo.user.money*1<num)
         {
             floatwin.msg("失败，魔法券不足");
             return;
         }
         if (pk.data.flag=="比赛") return;
-        if (pk["list"+team][myinfo.user.un]*1>=500) return;
+        if (pk["list"+team][myinfo.user.un]*1>=limit) return;
         if (this.bid_team!=team) this.bid_money=0;
         this.bid_team=team;
 
-        if (this.bid_money+num+pk["list"+team][myinfo.user.un]*1>500)
+        if (this.bid_money+num+pk["list"+team][myinfo.user.un]*1>limit)
         {
-            this.bid_money=500-num-pk["list"+team][myinfo.user.un]*1
+            this.bid_money=limit-num-pk["list"+team][myinfo.user.un]*1
         }
         else
         {
@@ -286,6 +287,8 @@ var pk={
         if (!this.btn1) return;
         this.btn1.unbind();
         this.btn2.unbind();
+		this.btn11.unbind();
+        this.btn21.unbind();
         this.btn1.click(function () {
             var c="";
             c+="投资1队<p>";
@@ -318,6 +321,13 @@ var pk={
                 pk.buy0(2,num[id]);
                 floatwin.hide();
             })
+        });
+		
+		this.btn11.click(function () {
+            pk.buy0(1,600);
+        });
+		this.btn21.click(function () {
+            pk.buy0(2,600);
         });
     },
     bidmsg2: function ()
@@ -562,6 +572,11 @@ var pk={
             this.btn2=create_div({left:55,top:95});
             this.btn2.html("<button class='button4'>投资</button>");
 
+			this.btn11=create_div({left:5,top:85});
+            this.btn11.html("<button class='button4'>投满</button>");
+            this.btn21=create_div({left:55,top:85});
+            this.btn21.html("<button class='button4'>投满</button>");
+			
             this.btn3=create_div({left:90,top:80});
             this.btn3.html("<button class='button4'>保险</button>");
 			
@@ -569,6 +584,13 @@ var pk={
             this.btnDown.html("<button class='button4'>txt</button>");
 			this.btnRe=create_div({left:90,top:60});
             this.btnRe.html("<button class='button4'>更新</button>");
+			
+			this.btnDown.click(function () {
+				pk.downTxt();
+			});
+			this.btnRe.click(function () {
+				pk.init();
+			});
         }
         else
         {
@@ -603,13 +625,6 @@ var pk={
         }
         this.btn3.click(function () {
             Bank.show();
-        });
-
-		this.btnDown.click(function () {
-            pk.downTxt();
-        });
-		this.btnRe.click(function () {
-            pk.init();
         });
 		
         this.clock.attr("align","center");

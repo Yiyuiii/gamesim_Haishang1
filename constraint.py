@@ -9,6 +9,10 @@ import pandas
 import copy
 import re
 
+#沉默权杖
+def print(*args, **kwargs):
+    pass
+
 EquipOppotunityNum=15
 PowerNum=6
 RangeNum=25

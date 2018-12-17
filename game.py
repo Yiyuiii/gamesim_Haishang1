@@ -203,6 +203,7 @@ class BattleField:
         return range+side+dmgType+race
 
     def equipAct(self, equip, unit, i, side, n, iTarget, sideTarget, nTarget, trigger=[], valueMul=1):
+        print('%s[%d,%d] 触发装备 %s.' % (unit.getName(), i, side, equip.name))
         #====================================== trigger test (or) =====================================
         if type(equip.trig)==list and not (True in [x in trigger for x in equip.trig]):
             return []
@@ -264,7 +265,6 @@ class BattleField:
                     elif equip.operAttr[i] == '攻击':
                         u.setDmg(value[i], '+')
                     elif equip.operAttr[i] in PowerDict:
-                        print(equip.operAttr[i])
                         u.setPower(value[i], '+', PowerDict[equip.operAttr[i]])
                     elif equip.operAttr[i] == '中毒':
                         u.setPoison(value[i], '+')
@@ -473,9 +473,9 @@ class BattleField:
                         UnitTarget.setPoison(unit.getDmg(), '+')
                     else:
                         defence=0
-                        for n in commendTar:
-                            if type(n)==int:
-                                defence+=n
+                        for cmd in commendTar:
+                            if type(cmd)==int:
+                                defence+=cmd
                         print('%s[%d,%d] 攻击 %s[%d,%d], 造成' % (
                             unit.getName(), i, side, UnitTarget.getName(), iTarget, sideTarget), end='')
                         self.unitAtk(dmg-defence, dmgType, iTarget, sideTarget, nTarget)
